@@ -1,0 +1,73 @@
+<html lang="en">
+<head>
+  <title>A Spotify Embed Example</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    #main-page {
+      display: none !important;
+    }
+
+    @media screen and (min-width: 860px) {
+      body {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="confirmation-container">
+    <p>Can you listen to/view video podcasts?</p>
+    <button id="yes-button">Yes</button>
+    <button id="no-button">No</button>
+  </div>
+
+  <div id="embed-iframe" style="position: absolute; width:0; height:0; border:0;"></div>  <script src="https://open.spotify.com/embed/iframe-api/v1" async></script>
+  <script type="text/javascript">
+    // Function to handle user confirmation
+    function handleConfirmation(canListen) {
+      const embedIframe = document.getElementById('embed-iframe');
+      const yesButton = document.getElementById('yes-button');
+      const noButton = document.getElementById('no-button');
+
+      if (canListen) {
+        // Show embed iframe and load the first episode
+        embedIframe.style.display = 'block';
+        window.onSpotifyIframeApiReady = (IFrameAPI) => {
+          const element = embedIframe;
+          const options = {
+            width: '100%',
+            height: '160',
+            uri: 'spotify:episode:7makk4oTQel546B0PZlDM5' // Replace with desired episode URI
+          };
+          const callback = (EmbedController) => {
+            EmbedController.addListener('ready', () => {
+              EmbedController.play();
+            });
+          };
+          IFrameAPI.createController(element, options, callback);
+        };
+      } else {
+        // Display an alert or message indicating the user cannot listen
+        alert("Sorry, you can't listen to/view video podcasts at this time.");
+      }
+
+      // Disable confirmation buttons after clicking
+      yesButton.disabled = true;
+      noButton.disabled = true;
+    }
+
+    const yesButton = document.getElementById('yes-button');
+    yesButton.addEventListener('click', () => handleConfirmation(true));
+
+    const noButton = document.getElementById('no-button');
+    noButton.addEventListener('click', () => handleConfirmation(false));
+
+    // This doesn't work. We need to think about a solution to hide the player
+    const iframe = document.getElementById('embed-iframe');
+    iframe.style.visibility = 'hidden';
+  </script>
+</body>
+</html>
